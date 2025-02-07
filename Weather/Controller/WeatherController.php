@@ -1,25 +1,25 @@
 <?php
-
+require '../../Common/Controller/BaseController.php';
 require '../Dao/WeatherApiDao.php';
-require '../Dto/Weather.php';
 require '../ViewHelper/WeatherViewHelper.php';
 
-WeatherController::weatherAction();
-
-class WeatherController 
+class WeatherController extends BaseController
 {
-    public static function weatherAction()
+    public function __construct() {
+        parent::__construct();
+        $this->smarty->template_dir = "/Applications/MAMP/htdocs/practice/Weather/";
+    }
+
+    public function weatherAction()
     {
         $data = WeatherApiDao::fetchWeather();
         $weatherList = WeatherViewHelper::weatherList($data);
 
-        foreach ($weatherList as $weather) {
-            echo "<div class='weather-card'>";
-            echo "<h3>" . $weather['date'] . "</h3>";
-            echo "<p><strong>天気:</strong>" . $weather['weather'] . "</p>";
-            echo "<p><strong>気温:</strong>" . $weather['temp'] . "</p>";
-            echo "<p><strong>湿度:</strong>" . $weather['humidity'] . "</p>";
-            echo "</div>";
-        }        
+        $this->smarty->assign("weatherList", $weatherList);
+        $this->smarty->assign("test", "これはテスト用です");
+        $this->smarty->display('weather.tpl');
     }
 }
+
+$index = new WeatherController();
+$index->weatherAction();
