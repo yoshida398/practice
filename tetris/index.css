@@ -1,0 +1,13 @@
+.gameArea__cell {
+    border: solid 1px black;
+    width: 20px;
+    height: 20px;
+}
+
+.gameArea__cell--block {
+    background-color: black;
+}
+
+.gameArea__cell--space {
+    background-color: blanchedalmond;
+}

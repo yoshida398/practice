@@ -1,22 +1,25 @@
 class blockController {
+
+    blockFallComplete= false;
+
     moveLeft(position, area) {
-        //if(this.canMove()) {
+        if(this.canMove(position, area).Left) {
             this.cleanBlock(position, area);
             position.forEach(position => {
                 area[position.y][position.x - 1] = 1;
             });
-        //}
+        }
 
         return area;
     }
 
     moveRight(position, area) {
-        //if(this.canMove()) {
+        if(this.canMove(position, area).Right) {
             this.cleanBlock(position, area);
             position.forEach(position => {
                 area[position.y][position.x + 1] = 1;
             });
-        //}
+        }
         return area;
     }
 
@@ -28,12 +31,12 @@ class blockController {
 
     moveDown(position, area) {
         // エリア情報と現在地とブロックで操作しているブロックとその位置を把握して下に一マス進む。
-        //if(this.canMove()) {
+        if(this.canMove(position, area).Down) {
             this.cleanBlock(position, area);
             position.forEach(position => {
                 area[position.y + 1][position.x] = 1;
             });
-        //}
+        }
 
         return area;
     }
@@ -42,8 +45,40 @@ class blockController {
         // ブロックを右に回転させる
     }
 
-    canMove() {
+    canMove(position, area) {
+        let result = { // resultの定義
+            'Left': true,
+            'Right': true,
+            'Down': true
+        };
+        
         // 移動できるかどうかを判定する
+        position.forEach(pos => { // positionではなくposとしている方が良い
+            // y座標が11の場合、下に移動できない
+            if (pos.y === 11) { 
+                result.Down = false;
+                this.blockFallComplete = true;
+            }
+    
+            // x座標が8の場合、右に移動できない
+            if (pos.x === 7) {
+                result.Right = false;
+            }
+    
+            // x座標が-1の場合、左に移動できない
+            if (pos.x === 0) {
+                result.Left = false;
+            }
+
+            if (area[pos.y][pos.x] === 2) {
+                result.Right = false;
+                result.Left = false;
+                result.Down = false;
+                this.blockFallComplete = true;
+            }
+        });
+
+        return result; // 判定結果を返す
     }
 
     /**
@@ -79,6 +114,10 @@ class blockController {
         }
 
         return area;
+    }
+
+    getBlockFallComplete () {
+        return this.blockFallComplete;
     }
 }
 

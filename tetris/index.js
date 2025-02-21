@@ -1,19 +1,22 @@
-import Block from '/tetris/block.js';
-import BlockController from '/tetris/blockController.js';
+import Block from '/practice/tetris/block.js';
+import BlockController from '/practice/tetris/blockController.js';
+import Show from '/practice/tetris/show.js';
 
 class index {
     constructor() {
         this.block = new Block();
-        this.gameArea = Array(12).fill().map(() => Array(8).fill(0));
+        this.show = new Show();
+        this.gameArea = Array(12).fill().map(() => Array(8).fill(0)); // ゲームエリアの初期化
         this.blockController = new BlockController();
-        this.startGame()
     }
 
     gameMaster() {
         // 1blockの操作(ゲームオーバーメソッドがtrueになるまでループ)
         this.block.createBlock();
         this.handleInput();
-        console.log(this.gameArea);
+        this.startGame();
+        this.show.showArea(this.gameArea);
+        this.checkGameOver();
     }
 
     startGame() {
@@ -31,20 +34,18 @@ class index {
             if (event.key === 'ArrowLeft') {
                 this.position = this.blockController.findBlockPositions(this.gameArea);
                 this.gameArea = this.blockController.moveLeft(this.position, this.gameArea);
-                console.log(this.gameArea);
             }
 
             if (event.key === 'ArrowRight') {
                 this.position = this.blockController.findBlockPositions(this.gameArea);
                 this.gameArea = this.blockController.moveRight(this.position, this.gameArea)
-                console.log(this.gameArea);
             }
 
             if (event.key === 'ArrowDown') {
                 this.position = this.blockController.findBlockPositions(this.gameArea);
                 this.gameArea = this.blockController.moveDown(this.position, this.gameArea)
-                console.log(this.gameArea);
             }
+            this.show.showArea(this.gameArea);
         });
     }
 
@@ -54,10 +55,16 @@ class index {
 
     updateGameArea() {
         // ゲームエリア更新
+        this.show.showArea(this.gameArea);
     }
 
     checkGameOver() {
-        // ゲームオーバー判定
+        if(this.blockController.getBlockFallComplete()){
+            this.startGame();
+            this.gameMaster();
+            return false;
+        }
+        return true;
     }
 }
 
