@@ -53,8 +53,12 @@
     display: none;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-out;
     width: 100%;
+    text-align: left;
+}
+
+.weather__item:not(:last-child) {
+    margin-bottom: 10px;
 }
 
 .weather__input:checked + .weather__btn + .weather__items {

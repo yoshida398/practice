@@ -1,13 +1,10 @@
 <?php
+require '../Dto/WeatherDto.php';
+require '../../../apiconfig.php';
 
 class WeatherApiDao 
-{
-    private const LAT = "35";
-    private const LON = "139";
-    private const API_KEY = "1fa5058328ec8646bb6597829bbfc7e6";
-    private const BASE_URL = "https://api.openweathermap.org/data/2.5/forecast";
-    
-    public static function fetchWeather()
+{   
+    public static function fetchWeather(): array
     {
         $url = sprintf(
             "%s?lat=%s&lon=%s&appid=%s&units=metric&lang=ja",
@@ -20,6 +17,16 @@ class WeatherApiDao
         $response = file_get_contents($url);
         $data = json_decode($response, true);
 
-        return $data;
+        $date = explode(' ', $data['list']['dt_txt'], 2);
+
+        $dto = new WeatherDTO(
+            date: $date[0],
+            day: $date[1],
+            weather: $data['list']['weather'][0]['description'],
+            temp: $data['list']['main']['temp'],
+            humidity: $data['list']['main']['humidity']
+        );
+
+        return $dto;
     }
 }
