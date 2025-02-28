@@ -9,11 +9,11 @@ class Block {
         'RED': [[1, 1, 0, 0], [0, 1, 1, 0]]
     };
 
-    constructor() {
+    constructor () {
         this.nextBlockList = [];
     }
 
-    createBlock() {
+    createBlock () {
         let color = Object.keys(Block.BlockPattern);
         let randomColor = color[Math.floor(Math.random() * color.length)];
 
@@ -23,14 +23,18 @@ class Block {
         return this;
     }
 
-    generateBlocks() {
+    generateBlocks () {
         while (this.nextBlockList.length < 5) {
             this.createBlock();
         }
     }
 
-    getNextBlock() {
+    getNextBlock () {
         return this.nextBlockList;
+    }
+
+    updateNextBlock () {
+        this.nextBlockList.shift();
     }
 }
 

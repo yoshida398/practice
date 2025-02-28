@@ -16,6 +16,8 @@ class Show {
                     valueCell.classList.add("gameArea__cell--space");
                 } else if (value === 1) {
                     valueCell.classList.add("gameArea__cell--block");
+                } else if (value === 2) {
+                    valueCell.classList.add("gameArea__cell--oldBlock");
                 }
 
                 row.appendChild(valueCell);

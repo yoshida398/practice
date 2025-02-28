@@ -6,7 +6,7 @@ class index {
     constructor() {
         this.block = new Block();
         this.show = new Show();
-        this.gameArea = Array(12).fill().map(() => Array(8).fill(0)); // ゲームエリアの初期化
+        this.gameArea = Array(12).fill().map(() => Array(8).fill(0));
         this.blockController = new BlockController();
     }
 
@@ -16,7 +16,6 @@ class index {
         this.handleInput();
         this.startGame();
         this.show.showArea(this.gameArea);
-        this.checkGameOver();
     }
 
     startGame() {
@@ -38,12 +37,21 @@ class index {
 
             if (event.key === 'ArrowRight') {
                 this.position = this.blockController.findBlockPositions(this.gameArea);
-                this.gameArea = this.blockController.moveRight(this.position, this.gameArea)
+                this.gameArea = this.blockController.moveRight(this.position, this.gameArea);
             }
 
             if (event.key === 'ArrowDown') {
                 this.position = this.blockController.findBlockPositions(this.gameArea);
-                this.gameArea = this.blockController.moveDown(this.position, this.gameArea)
+                this.gameArea = this.blockController.moveDown(this.position, this.gameArea);
+            }
+
+            if (event.key === 'ArrowUp') {
+                this.position = this.blockController.findBlockPositions(this.gameArea);
+                this.gameArea = this.blockController.rotate(this.position, this.gameArea);
+            }
+
+            if (this.blockController.blockFallComplete) {
+                this.checkGameOver();
             }
             this.show.showArea(this.gameArea);
         });
@@ -54,20 +62,22 @@ class index {
     }
 
     updateGameArea() {
-        // ゲームエリア更新
-        this.show.showArea(this.gameArea);
+        // ブロックの更新処理
+        for (let i = 0; i < this.gameArea.length; i++) {
+            for (let j = 0; j < this.gameArea[i].length; j++) {
+                if (this.gameArea[i][j] === 1) {
+                    this.gameArea[i][j] = 2;
+                }
+            }
+        }
+        this.block.updateNextBlock();
     }
 
     checkGameOver() {
-        if(this.blockController.getBlockFallComplete()){
-            this.startGame();
-            this.gameMaster();
-            return false;
-        }
-        return true;
+        this.updateGameArea();
+        this.startGame();
     }
 }
 
 let gameMaster = new index();
-// ゲーム終了までループ
 gameMaster.gameMaster();

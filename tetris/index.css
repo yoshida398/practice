@@ -11,3 +11,7 @@
 .gameArea__cell--space {
     background-color: blanchedalmond;
 }
+
+.gameArea__cell--oldBlock {
+    background-color: chocolate;
+}

@@ -1,6 +1,6 @@
 class blockController {
 
-    blockFallComplete= false;
+    blockFallComplete = false;
 
     moveLeft(position, area) {
         if(this.canMove(position, area).Left) {
@@ -41,8 +41,38 @@ class blockController {
         return area;
     }
 
-    rotate(block) {
+    rotate(position, area) {
         // ブロックを右に回転させる
+        // 最初の座標（最上行・最左列）を基準として回転を行う
+        const minX = Math.min(...position.map(pos => pos.x)); // 最小のx座標
+        const minY = Math.min(...position.map(pos => pos.y)); // 
+        
+        console.log(minX, minY);
+
+        // 回転後の座標を保存する配列
+        const rotatedposition = position.map(pos => ({
+            x: minY + (pos.y - minY),
+            y: minX - (pos.x - minX)
+        }));
+
+        // 新しいゲームエリアをコピー
+        let newArea = area.map(row => row.slice());
+
+        // 回転後の位置にブロックを配置
+        rotatedposition.forEach(({ x, y }) => {
+            if (newArea[y] && newArea[y][x] !== undefined) {
+                newArea[y][x] = 1;  // 新しい位置にブロックを配置
+            }
+        });
+
+        // もとの位置にあったブロックを消去
+        position.forEach(({ x, y }) => {
+            if (newArea[y] && newArea[y][x] !== undefined) {
+                newArea[y][x] = 0;  // 元の位置を空にする
+            }
+        });
+
+        return newArea;
     }
 
     canMove(position, area) {
@@ -53,28 +83,29 @@ class blockController {
         };
         
         // 移動できるかどうかを判定する
-        position.forEach(pos => { // positionではなくposとしている方が良い
-            // y座標が11の場合、下に移動できない
+        position.forEach(pos => {
             if (pos.y === 11) { 
+                result.Right = false;
+                result.Left = false;
                 result.Down = false;
                 this.blockFallComplete = true;
+                return result;
             }
     
-            // x座標が8の場合、右に移動できない
-            if (pos.x === 7) {
+            if (pos.x === 7 || area[pos.y][pos.x + 1] === 2) {
                 result.Right = false;
+                return result;
             }
     
-            // x座標が-1の場合、左に移動できない
-            if (pos.x === 0) {
+            if (pos.x === 0 || area[pos.y][pos.x - 1] === 2) {
                 result.Left = false;
+                return result;
             }
 
-            if (area[pos.y][pos.x] === 2) {
-                result.Right = false;
-                result.Left = false;
+            if (area[pos.y + 1][pos.x] === 2) {
                 result.Down = false;
                 this.blockFallComplete = true;
+                return result;
             }
         });
 
@@ -87,15 +118,15 @@ class blockController {
      * @returns {Array} ブロックごとの座標
      */
     findBlockPositions(area) {
-        let positions = [];
+        let position = [];
         for (let y = 0; y < area.length; y++) {
             for (let x = 0; x < area[y].length; x++) {
                 if (area[y][x] === 1) {
-                    positions.push({ x, y });
+                    position.push({ x, y });
                 }
             }
         }
-        return positions;
+        return position;
     }
 
     /**
@@ -105,6 +136,7 @@ class blockController {
      * @returns {Array} 更新したエリア情報
      */
     spawn(block, area) {
+        this.blockFallComplete = false;
         for (let y = 0; y < block.length; y++) {
             for (let x = 0; x < block[y].length; x++) {
                 if (block[y][x] === 1) {
@@ -114,10 +146,6 @@ class blockController {
         }
 
         return area;
-    }
-
-    getBlockFallComplete () {
-        return this.blockFallComplete;
     }
 }
 
